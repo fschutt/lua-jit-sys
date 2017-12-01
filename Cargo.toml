@@ -1,10 +1,10 @@
 [package]
-name = "luajit-sys"
+name = "lua-jit-sys"
 version = "2.0.50"
 authors = ["Felix Schütt <felix.schuett@maps4print.com>"]
 build = "build.rs"
-repository = "https://github.com/fschutt/luajit-sys"
-homepage = "https://github.com/fschutt/luajit-sys"
+repository = "https://github.com/fschutt/lua-jit-sys"
+homepage = "https://github.com/fschutt/lua-jit-sys"
 license = "MIT"
 readme = "README.md"
 description = "System bindings for LuaJIT 2.0.5"
