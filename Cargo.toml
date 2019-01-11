@@ -12,11 +12,11 @@ description = "System bindings for LuaJIT 2.0.5"
 [dependencies]
 
 [build-dependencies]
-bindgen = "0.31.3"
+bindgen = "0.46.0"
 gcc = "0.3"
 
 [features]
-default = ["arch_x64"]
+default = ["arch_x64","sse", "sse2"]
 
 # PLEASE CHOOSE ONLY ONE OF THE ARCHITECTURES, WILL NOT COMPILE OTHERWISE!
 arch_arm = []

@@ -22,11 +22,21 @@ extern crate gcc;
 use gcc::Build;
 use std::env;
 use std::path::{Path, PathBuf};
+use std::process::{Command,Stdio};
+use std::fs;
 
 const LUA_VERSION_FOLDER_NAME: &str = "LuaJIT-2.0.5";
 
+const TAR_NAME: &'static str = "LuaJit-2.0.5.tar.gz";
+const DOWNLOAD_URL: &'static str = "http://luajit.org/download/LuaJIT-2.0.5.tar.gz";
+const BUILD_RESULT: &'static str = "LuaJIT-2.0.5/src/ljamalg.c";
 
 fn main() {
+
+    download_tar(DOWNLOAD_URL, TAR_NAME);
+    extract_tar(LUA_VERSION_FOLDER_NAME, TAR_NAME);
+    build(LUA_VERSION_FOLDER_NAME, BUILD_RESULT); 
+
 
     // setup paths (valid for LuaJIT 2.0.5)
     let path_src = format!("src/{}", LUA_VERSION_FOLDER_NAME);
@@ -246,7 +256,7 @@ architectures:\t{:?}
     // TODO: there is a file called luaconf.h, not sure if it's important.
     // It is not listed in the C++ header so I thought it's not important for actual functionality
     let bindings = bindgen::Builder::default()
-        .rust_target(bindgen::RustTarget::Stable_1_19)
+        .rust_target(bindgen::RustTarget::Stable_1_27)
         .header(format!("{}/lua.h", path_src_src))
         .header(format!("{}/lauxlib.h", path_src_src))
         .header(format!("{}/lualib.h", path_src_src))
@@ -260,3 +270,63 @@ architectures:\t{:?}
         .write_to_file(out_path.join("bindings.rs"))
         .expect("Unable to write bindings!");
 }
+
+
+
+fn download_tar(url: &'static str, tar: &'static str) {
+    match fs::metadata(tar) {
+        Ok(ref m) => {
+            if m.is_file() {
+                return;
+            }
+        },
+        Err(_) => { }
+    };
+    Command::new("curl")
+        .arg(url)
+        .arg("--output").arg(tar)
+        .stdout(Stdio::inherit())
+        .stderr(Stdio::inherit())
+        .status()
+        .map_err(|e| panic!("downloading LuaJIT from url: {} failed {:?}", url, e));
+}
+
+fn extract_tar(file: &'static str, tar: &'static str) {
+    match fs::metadata(file) {
+        Ok(ref m) => {
+            if m.is_dir() {
+                return;
+            }
+        }
+        Err(_) => { }
+    };
+
+    Command::new("tar")
+        .arg("xf").arg(tar)
+        .stdout(Stdio::inherit())
+        .stderr(Stdio::inherit())
+        .status()
+        .map_err(|e| panic!("tar extraction failed {:?}", e));
+}
+
+fn build(file: &'static str, build_result: &'static str) {
+    match fs::metadata(build_result) {
+        Ok(ref m) => {
+            if m.is_file() {
+                return;
+            }
+        }
+        Err(_) => { }
+    };
+
+
+    Command::new("make")
+        .arg("amalg")
+        .current_dir(file)
+        .stdout(Stdio::inherit())
+        .stderr(Stdio::inherit())
+        .status()
+        .map_err(|e| panic!("tar extraction failed {:?}", e));
+}
+
+
