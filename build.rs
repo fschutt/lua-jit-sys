@@ -306,7 +306,7 @@ fn extract_tar(file: &'static str, tar: &'static str) {
         .stdout(Stdio::inherit())
         .stderr(Stdio::inherit())
         .status()
-        .map_err(|e| panic!("tar extraction failed {:?}", e));
+        .map_err(|e| panic!("tar extraction failed: {:?}", e));
 }
 
 fn build(file: &'static str, build_result: &'static str) {
@@ -326,7 +326,7 @@ fn build(file: &'static str, build_result: &'static str) {
         .stdout(Stdio::inherit())
         .stderr(Stdio::inherit())
         .status()
-        .map_err(|e| panic!("tar extraction failed {:?}", e));
+        .map_err(|e| panic!("make amalg failed: {:?}", e));
 }
 
 
